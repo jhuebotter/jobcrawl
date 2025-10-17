@@ -1,18 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.src.core.db import SessionLocal
+from backend.src.core.db import get_db
 from backend.src.models.schema import Tag as TagModel
 from backend.src.models.validation import Tag, TagCreate
 from typing import List
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/tags/", response_model=Tag)
 def create_tag(tag: TagCreate, db: Session = Depends(get_db)):

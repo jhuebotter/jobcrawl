@@ -1,7 +1,7 @@
 import datetime
 import json
+from sqlalchemy.orm import Session
 from backend.src.core.logging import get_logger
-from backend.src.core.db import SessionLocal
 from backend.src.models.schema import Run, Entity, Tag, EntityTag, Source, Person
 from backend.src.models.validation import EntityCreate
 from backend.src.core.provider import llm_provider
@@ -11,27 +11,24 @@ from pydantic import ValidationError
 logger = get_logger(__name__)
 
 class Agent:
-    def __init__(self):
-        self.db_session = SessionLocal()
-
-    def start_run(self, tags: list[str], cities: list[str], institution_types: list[str]):
+    def start_run(self, db: Session, tags: list[str], cities: list[str], institution_types: list[str]):
         run = Run(
-            started_at=datetime.datetime.utcnow().isoformat(),
+            started_at=datetime.datetime.now(datetime.UTC).isoformat(),
             parameters=f"tags: {tags}, cities: {cities}, types: {institution_types}",
             status="in_progress"
         )
-        self.db_session.add(run)
-        self.db_session.commit()
+        db.add(run)
+        db.commit()
         logger.info(f"Starting run {run.id} with parameters: {run.parameters}")
 
         for city in cities:
             for tag_name in tags:
                 logger.info(f"Processing city: {city}, tag: {tag_name}")
-                self._process_pair(city, tag_name, institution_types, run.id)
+                self._process_pair(db, city, tag_name, institution_types, run.id)
 
-        run.finished_at = datetime.datetime.utcnow().isoformat()
+        run.finished_at = datetime.datetime.now(datetime.UTC).isoformat()
         run.status = "completed"
-        self.db_session.commit()
+        db.commit()
         logger.info(f"Run {run.id} completed.")
 
     def _generate_search_query(self, city: str, tag_name: str, institution_types: list[str]) -> str:
@@ -70,32 +67,32 @@ class Agent:
             logger.error(f"Validation failed for entity '{data.get('name')}': {e}")
             return None
 
-    def _find_duplicate(self, entity_data: EntityCreate) -> Entity | None:
-        existing_entity = self.db_session.query(Entity).filter(
+    def _find_duplicate(self, db: Session, entity_data: EntityCreate) -> Entity | None:
+        existing_entity = db.query(Entity).filter(
             (Entity.name == entity_data.name) | (Entity.website == str(entity_data.website))
         ).first()
         return existing_entity
 
-    def _persist_entity(self, entity_data: EntityCreate, url: str, run_id: int):
-        now = datetime.datetime.utcnow().isoformat()
+    def _persist_entity(self, db: Session, entity_data: EntityCreate, url: str, run_id: int):
+        now = datetime.datetime.now(datetime.UTC).isoformat()
         new_entity = Entity(
             **entity_data.model_dump(),
             created_at=now,
             updated_at=now
         )
-        self.db_session.add(new_entity)
-        self.db_session.commit()
+        db.add(new_entity)
+        db.commit()
 
         new_source = Source(
             entity_id=new_entity.id,
             url=url,
             retrieved_at=now
         )
-        self.db_session.add(new_source)
-        self.db_session.commit()
+        db.add(new_source)
+        db.commit()
         logger.info(f"  - Persisted new entity '{new_entity.name}' with id {new_entity.id}")
 
-    def _process_pair(self, city: str, tag_name: str, institution_types: list[str], run_id: int):
+    def _process_pair(self, db: Session, city: str, tag_name: str, institution_types: list[str], run_id: int):
         search_query = self._generate_search_query(city, tag_name, institution_types)
         
         urls = scraper.retrieve_content(search_query)
@@ -108,12 +105,12 @@ class Agent:
                     validated_entity = self._normalize_and_validate(extracted_data)
                     if validated_entity:
                         logger.info(f"  - Validated: {validated_entity.name}")
-                        duplicate = self._find_duplicate(validated_entity)
+                        duplicate = self._find_duplicate(db, validated_entity)
                         if duplicate:
                             logger.info(f"  - Found duplicate for '{validated_entity.name}'. Merging/flagging for review.")
                             # Merge logic will be implemented in a later task
                         else:
-                            self._persist_entity(validated_entity, url, run_id)
+                            self._persist_entity(db, validated_entity, url, run_id)
         pass
 
 agent = Agent()
