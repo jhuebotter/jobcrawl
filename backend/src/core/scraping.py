@@ -1,5 +1,9 @@
 import urllib.robotparser
 from urllib.parse import urlparse
+import requests
+from backend.src.core.logging import get_logger
+
+logger = get_logger(__name__)
 
 class RobotsChecker:
     def __init__(self, user_agent="JobCrawlAgent/1.0"):
@@ -20,8 +24,7 @@ class RobotsChecker:
                 parser.read()
                 self.parsers[robots_url] = parser
             except Exception as e:
-                print(f"Could not read robots.txt from {robots_url}: {e}")
-                # If we can't read robots.txt, assume we can't fetch.
+                logger.warning(f"Could not read robots.txt from {robots_url}: {e}")
                 return False
         
         parser = self.parsers.get(robots_url)
@@ -30,5 +33,40 @@ class RobotsChecker:
         
         return False
 
-# Singleton instance
+class Scraper:
+    def __init__(self):
+        self.robots_checker = RobotsChecker()
+
+    def retrieve_content(self, query: str) -> list[str]:
+        """
+        Given a search query, retrieves a list of URLs.
+        This is a placeholder and does not perform a real search yet.
+        """
+        logger.info(f"Simulating search for: {query}")
+        # Placeholder URLs
+        return [
+            "http://example.com/page1",
+            "http://example.com/page2",
+            "http://example.com/disallowed",
+        ]
+
+    def get_page_content(self, url: str) -> str:
+        """
+        Fetches the text content of a single page, respecting robots.txt.
+        """
+        if not self.robots_checker.can_fetch(url):
+            logger.info(f"Skipping {url} due to robots.txt")
+            return ""
+        
+        try:
+            response = requests.get(url, headers={'User-Agent': self.robots_checker.user_agent})
+            response.raise_for_status()
+            # In a real implementation, we would parse the HTML here.
+            return response.text[:500] # Return a snippet for now
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch {url}: {e}")
+            return ""
+
+# Singleton instances
 robots_checker = RobotsChecker()
+scraper = Scraper()

@@ -12,3 +12,4 @@ dependencies:
     - python-dotenv
     - google-generativeai
     - pytest
+    - httpx
