@@ -12,34 +12,24 @@ This guide provides instructions for setting up and running the JobCrawl applica
 
 ### 1. Backend (Python)
 
-**Using `venv`:**
+**Recommended: `mamba`**
 
 ```bash
-# Navigate to the backend directory
-cd backend
-
-# Create a virtual environment
-python3 -m venv .venv
+# Create and activate the environment from the project root
+mamba env update --file environment.yml --prune
 
 # Activate the environment
-source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
+mamba activate jobcrawl
 ```
 
-**Using `conda`:**
+**Fallback: `conda`**
 
 ```bash
-# Navigate to the backend directory
-cd backend
+# Create and activate the environment from the project root
+conda env update --file environment.yml --prune
 
-# Create a conda environment
-conda create --name jobcrawl python=3.11
+# Activate the environment
 conda activate jobcrawl
-
-# Install dependencies
-pip install -r requirements.txt
 ```
 
 ### 2. Frontend (React)
@@ -57,21 +47,22 @@ npm install
 The application uses the Google Gemini API for its agentic capabilities.
 
 1.  Obtain an API key from Google AI Studio.
-2.  Set it as an environment variable:
+2.  Create a `.env` file in the project root (by copying `.env.example`) and add your key:
 
-    ```bash
-    export GEMINI_API_KEY="YOUR_API_KEY"
+    ```
+    GEMINI_API_KEY="YOUR_API_KEY_HERE"
     ```
 
-    If this variable is not set, the application will prompt you to enter it on the first run.
+    The application will load this variable automatically.
 
 ## Running the Application
 
 1.  **Start the Backend Server:**
 
     ```bash
-    # From the backend directory
-    uvicorn src.main:app --reload
+    # Make sure the 'jobcrawl' conda environment is activated
+    # From the project root directory
+    uvicorn backend.src.main:app --reload
     ```
 
 2.  **Start the Frontend Development Server:**
