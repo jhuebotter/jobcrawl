@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Intent-First Specification**: Is the specification clear on the what and why?
+- [ ] **Privacy-by-Design & Local-First**: Does the plan prioritize local data and processing?
+- [ ] **Provenance & Traceability**: Does the plan include measures for auditing and reproducibility?
+- [ ] **Simplicity & Modularity**: Is the proposed solution simple and modular?
+- [ ] **Quality Gates & Review Discipline**: Does the plan include validation and review steps?
 
 ## Project Structure
 

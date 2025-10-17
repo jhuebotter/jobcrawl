@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+  title: JobCrawl MVP API
+  version: 1.0.0
+  description: Internal API for the JobCrawl local-first application.
+
+paths:
+  /api/tags:
+    get:
+      summary: List all tags
+      responses:
+        '200':
+          description: A list of tags.
+    post:
+      summary: Create a new tag
+      responses:
+        '201':
+          description: The created tag.
+
+  /api/entities:
+    get:
+      summary: List and filter entities
+      parameters:
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: starred
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: A list of entities.
+
+  /api/entities/{entity_id}:
+    put:
+      summary: Update an entity
+      parameters:
+        - name: entity_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The updated entity.
+
+  /api/runs:
+    get:
+      summary: List all runs
+      responses:
+        '200':
+          description: A list of discovery runs.
+    post:
+      summary: Start a new discovery run
+      responses:
+        '202':
+          description: The run has been started.
+
+  /api/runs/undo_last:
+    post:
+      summary: Undo the last discovery run
+      responses:
+        '200':
+          description: The last run has been undone.
+
+  /api/review_queue:
+    get:
+      summary: Get items needing review
+      responses:
+        '200':
+          description: A list of items for review.
+
+  /api/export:
+    get:
+      summary: Export entities to CSV or JSON
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv, json]
+      responses:
+        '200':
+          description: The exported data.
