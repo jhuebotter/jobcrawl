@@ -2,7 +2,7 @@ name: jobcrawl
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
+  - python=3.12
   - pip
   - pip:
     - fastapi
@@ -11,3 +11,4 @@ dependencies:
     - pydantic
     - python-dotenv
     - google-generativeai
+    - pytest
