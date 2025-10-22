@@ -15,6 +15,7 @@ class Entity(Base):
     confidence = Column(Float)
     created_at = Column(String, nullable=False)
     updated_at = Column(String, nullable=False)
+    run_id = Column(Integer, ForeignKey('runs.id'))
     tags = relationship("EntityTag", back_populates="entity")
     people = relationship("Person", back_populates="entity")
     sources = relationship("Source", back_populates="entity")
@@ -30,7 +31,7 @@ class Tag(Base):
 
 class EntityTag(Base):
     __tablename__ = 'entity_tags'
-    entity_id = Column(Integer, ForeignKey('entities.id'), primary_key=True)
+    entity_id = Column(Integer, ForeignKey('entities.id', ondelete="CASCADE"), primary_key=True)
     tag_id = Column(Integer, ForeignKey('tags.id'), primary_key=True)
     entity = relationship("Entity", back_populates="tags")
     tag = relationship("Tag", back_populates="entities")
@@ -38,19 +39,21 @@ class EntityTag(Base):
 class Person(Base):
     __tablename__ = 'people'
     id = Column(Integer, primary_key=True)
-    entity_id = Column(Integer, ForeignKey('entities.id'))
+    entity_id = Column(Integer, ForeignKey('entities.id', ondelete="CASCADE"))
     name = Column(String, nullable=False)
     role = Column(String)
     source_url = Column(String)
     review_status = Column(String)
+    run_id = Column(Integer, ForeignKey('runs.id'))
     entity = relationship("Entity", back_populates="people")
 
 class Source(Base):
     __tablename__ = 'sources'
     id = Column(Integer, primary_key=True)
-    entity_id = Column(Integer, ForeignKey('entities.id'))
+    entity_id = Column(Integer, ForeignKey('entities.id', ondelete="CASCADE"))
     url = Column(String, nullable=False)
     retrieved_at = Column(String, nullable=False)
+    run_id = Column(Integer, ForeignKey('runs.id'))
     entity = relationship("Entity", back_populates="sources")
 
 class Run(Base):
@@ -60,11 +63,12 @@ class Run(Base):
     finished_at = Column(String)
     parameters = Column(Text)
     status = Column(String)
+    results_summary = Column(Text)
 
 class EditLog(Base):
     __tablename__ = 'edit_logs'
     id = Column(Integer, primary_key=True)
-    entity_id = Column(Integer, ForeignKey('entities.id'))
+    entity_id = Column(Integer, ForeignKey('entities.id', ondelete="CASCADE"))
     field_name = Column(String, nullable=False)
     old_value = Column(Text)
     new_value = Column(Text)
@@ -73,5 +77,5 @@ class EditLog(Base):
 
 class Starred(Base):
     __tablename__ = 'starred'
-    entity_id = Column(Integer, ForeignKey('entities.id'), primary_key=True)
+    entity_id = Column(Integer, ForeignKey('entities.id', ondelete="CASCADE"), primary_key=True)
     entity = relationship("Entity", back_populates="starred_entry")

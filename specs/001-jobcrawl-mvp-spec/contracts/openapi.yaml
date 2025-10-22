@@ -4,22 +4,49 @@ info:
   version: 1.0.0
   description: Internal API for the JobCrawl local-first application.
 
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+
 paths:
   /api/tags:
     get:
       summary: List all tags
+      description: Retrieves a list of all tags, sorted by ID descending.
       responses:
         '200':
           description: A list of tags.
     post:
       summary: Create a new tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
       responses:
         '201':
           description: The created tag.
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /api/entities:
     get:
       summary: List and filter entities
+      description: Retrieves a list of entities, sorted by ID descending. Multiple filters are combined with an AND condition.
       parameters:
         - name: tag
           in: query
@@ -53,15 +80,32 @@ paths:
       responses:
         '200':
           description: The updated entity.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /api/runs:
     get:
       summary: List all runs
+      description: Retrieves a list of all runs, sorted by ID descending.
       responses:
         '200':
           description: A list of discovery runs.
     post:
       summary: Start a new discovery run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parameters:
+                  type: string
+                  example: "tags:AI,Robotics;cities:Zurich,Berlin"
       responses:
         '202':
           description: The run has been started.
@@ -72,6 +116,12 @@ paths:
       responses:
         '200':
           description: The last run has been undone.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /api/review_queue:
     get:
@@ -79,6 +129,44 @@ paths:
       responses:
         '200':
           description: A list of items for review.
+
+  /api/review_queue/{entity_id}/approve:
+    post:
+      summary: Approve a merge for a duplicate entity
+      parameters:
+        - name: entity_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Merge approved.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/review_queue/{entity_id}/reject:
+    post:
+      summary: Reject a merge for a duplicate entity
+      parameters:
+        - name: entity_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Merge rejected.
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /api/export:
     get:

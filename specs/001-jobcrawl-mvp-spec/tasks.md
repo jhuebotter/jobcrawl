@@ -4,125 +4,118 @@
 
 ---
 
-## Phase 1: Setup & Configuration
+## Phase 1: Foundational Setup & Test Environment
 
-**Purpose**: Initialize the project structure, environment, and configuration.
+**Purpose**: Solidify the project's foundation and ensure the test environment is robust and reliable.
 
-- [ ] T001 [P] Create the backend and frontend directory structures in the repository root.
-- [ ] T002 [P] Create the `environment.yml` file with core backend dependencies (Python, FastAPI, Uvicorn, SQLAlchemy, Pydantic).
-- [ ] T003 [P] Create a `.env.example` file in the root directory for the `GEMINI_API_KEY`.
-- [ ] T004 [P] Initialize the frontend project with `npm init` and create placeholder directories.
-- [ ] T005 Update `specs/001-jobcrawl-mvp-spec/quickstart.md` with mamba-first (and conda fallback) environment setup instructions.
-- [ ] T006 Update the root `README.md` with a project overview and a link to the quickstart guide.
-
----
-
-## Phase 2: Foundational Backend
-
-**Purpose**: Build the core data and service layers of the backend.
-
-- [ ] T007 Implement the database schema in `backend/src/models/schema.py` based on `data-model.md`.
-- [ ] T008 Create a database initialization script in `backend/src/core/db.py` to create the SQLite database and tables.
-- [ ] T009 Implement Pydantic models for data validation in `backend/src/models/validation.py`.
-- [ ] T010 [P] Create the LLM provider abstraction in `backend/src/core/provider.py` with a default Gemini implementation.
-- [ ] T011 Implement a simple rate-limiting mechanism in the LLM provider abstraction in `backend/src/core/provider.py`.
-- [ ] T012 [P] Create placeholder prompt files in `backend/src/prompts/` (e.g., `discovery.txt`, `extraction.txt`, `enrichment.txt`).
-- [ ] T013 Implement a utility in `backend/src/core/scraping.py` to check `robots.txt` before fetching a URL.
-- [ ] T014 Implement a structured logging configuration in `backend/src/core/logging.py`.
-- [ ] T015 Write unit tests for the data validation models in `backend/tests/unit/test_validation.py`.
-- [ ] T016 **Checkpoint**: Run tests to confirm the data layer is solid.
+- [x] T01.01 [P] Update `environment.yml` to ensure `fastapi`, `sqlalchemy`, `pydantic`, `python-dotenv`, `google-generativeai`, `pytest`, `httpx`, and `google-search-results` are included.
+- [x] T01.02 [P] Verify the `backend` and `frontend` directory structures match the `plan.md`.
+- [x] T01.03 [P] Update `backend/src/models/schema.py` and `backend/src/models/validation.py` to be fully consistent with the final `data-model.md`.
+- [x] T01.04 Refactor `backend/src/core/db.py` to include the canonical `get_db` function.
+- [x] T01.05 Refactor all API routers in `backend/src/api/` to use the canonical `get_db` function.
+- [x] T01.06 Refactor `backend/tests/conftest.py` to use the `StaticPool` and app factory pattern for a reliable, in-memory test database.
+- [x] T01.07 **Checkpoint**: Run all existing integration tests and confirm they pass with the new test setup.
+- [ ] T01.08 **Git**: Commit and push all foundational setup changes with message "refactor: Solidify foundational backend and test setup".
 
 ---
 
-## Phase 3: User Story 1 - Configure and Run a Discovery Agent
+## Phase 2: Foundational Backend API
 
-**Goal**: Implement the core agentic discovery loop.
-**Independent Test**: A user can define tags, configure a run via the API, and see new entities persisted in the database.
+**Purpose**: Implement the full skeleton of the backend API, ensuring all endpoints are defined and testable before adding complex business logic.
 
-- [ ] T017 [US1] Implement the main orchestration loop for (city × tag) processing in `backend/src/core/agent.py`.
-- [ ] T018 [US1] Implement search query generation logic within the agent in `backend/src/core/agent.py`.
-- [ ] T019 [US1] Implement the web retrieval step, using the `robots.txt` checker, in `backend/src/core/scraping.py`.
-- [ ] T020 [US1] Implement the data extraction step using the LLM provider in `backend/src/core/agent.py`.
-- [ ] T021 [US1] Implement data normalization and validation for extracted data in `backend/src/core/agent.py`.
-- [ ] T022 [US1] Implement the deduplication and merge proposal logic against the database in `backend/src/core/agent.py`.
-- [ ] T023 [US1] Implement the logic to persist new/updated entities and their provenance in `backend/src/core/agent.py`.
-- [ ] T024 [US1] Implement the API endpoint for creating and listing tags (`POST /api/tags`, `GET /api/tags`) in `backend/src/api/tags.py`.
-- [ ] T025 [US1] Implement the API endpoint for starting and listing runs (`POST /api/runs`, `GET /api/runs`) in `backend/src/api/runs.py`.
-- [ ] T026 [US1] Write integration tests for the tags and runs API endpoints in `backend/tests/integration/test_api_runs.py`.
-- [ ] T027 [P] [US1] Create the placeholder `TagManager` view component in `frontend/src/pages/TagManager.js`.
-- [ ] T028 [P] [US1] Create the placeholder `RunPanel` view component in `frontend/src/pages/RunPanel.js`.
-- [ ] T029 **Checkpoint**: Manually test the API endpoints to confirm a run can be started and its state is logged.
+- [ ] T02.01 [P] Implement the basic CRUD endpoints for tags (`create_tag`, `read_tags`) in `backend/src/api/tags.py`.
+- [ ] T02.02 [P] Implement the skeleton for all entity endpoints (`read_entities`, `update_entity`, `autocomplete_entity`) in `backend/src/api/entities.py`.
+- [ ] T02.03 [P] Implement the skeleton for all run endpoints (`create_run`, `read_runs`, `undo_last_run`) in `backend/src/api/runs.py`.
+- [ ] T02.04 [P] Implement the skeleton for the review queue endpoints in `backend/src/api/review.py`.
+- [ ] T02.05 [P] Implement the skeleton for the export endpoint in `backend/src/api/export.py`.
+- [ ] T02.06 Write basic integration tests for each skeleton endpoint in the `backend/tests/integration/` directory to ensure they are reachable and return correct status codes.
+- [ ] T02.07 **Checkpoint**: Run all integration tests against the skeleton API and confirm they pass.
+- [ ] T02.08 **Git**: Commit and push the complete API skeleton with message "feat: Implement foundational API skeleton".
 
 ---
 
-## Phase 4: User Story 2 - Explore and Filter Discovered Entities
+## Phase 3: User Story 1 - Core Agent Implementation (Golden Path)
 
-**Goal**: Allow users to see and interact with the data.
-**Independent Test**: A user can retrieve a filtered list of entities from the API and export it.
+**Goal**: Implement the core agentic discovery loop, moving from mock to real implementation, driven by a comprehensive integration test.
 
-- [ ] T030 [US2] Implement the API endpoint for listing and filtering entities (`GET /api/entities`) in `backend/src/api/entities.py`.
-- [ ] T031 [US2] Implement the API endpoint for exporting entities (`GET /api/export`) in `backend/src/api/export.py`.
-- [ ] T032 [US2] Write integration tests for the entities and export API endpoints in `backend/tests/integration/test_api_entities.py`.
-- [ ] T033 [P] [US2] Create the placeholder `BrowseView` component in `frontend/src/pages/BrowseView.js`.
-- [ ] T034 [P] [US2] Create the placeholder `EntityDetail` view component in `frontend/src/pages/EntityDetail.js`.
-- [ ] T035 **Checkpoint**: Manually test the API to confirm entities can be filtered and exported correctly.
+### Sub-Phase 3.1: Prompt Engineering
+
+- [ ] T03.01 [US1] Create a utility function in `backend/src/core/prompts.py` to load prompt templates from the `backend/src/prompts/` directory.
+- [ ] T03.02 [US1] Write a unit test for the prompt loading utility in `backend/tests/unit/test_prompts.py`.
+- [ ] T03.03 [P] [US1] Write the first version of the search query generation prompt in `backend/src/prompts/discovery.txt`.
+- [ ] T03.04 [P] [US1] Write the first version of the data extraction prompt in `backend/src/prompts/extraction.txt`, ensuring it explicitly requests valid JSON with a confidence score.
+
+### Sub-Phase 3.2: Real Agent Logic
+
+- [ ] T03.05 [US1] **Upgrade** `backend/src/core/scraping.py`: Implement a real web search function using the `google-search-results` library.
+- [ ] T03.06 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_generate_search_query` method to use the `discovery.txt` prompt.
+- [ ] T03.07 [US1] **Upgrade** `backend/src/core/agent.py`: In the `_process_pair` method, explicitly call the `robots_checker.can_fetch()` method from `scraping.py` before attempting to scrape any URL.
+- [ ] T03.08 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_extract_data` method to use the `extraction.txt` prompt and include robust JSON parsing.
+- [ ] T03.09 [US1] Write a unit test for the `_normalize_and_validate` method in `backend/tests/unit/test_agent.py`.
+- [ ] T03.10 [US1] Implement the LLM-driven deduplication logic in the `_find_duplicate` method in `backend/src/core/agent.py`.
+- [ ] T03.11 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the full `_process_pair` orchestration logic, calling all helper methods in sequence.
+
+### Sub-Phase 3.3: "Golden Path" E2E Integration Test
+
+- [ ] T03.12 [US1] Create the new test file `backend/tests/integration/test_agent_e2e.py`.
+- [ ] T03.13 [US1] In `test_agent_e2e.py`, write a `test_golden_path` function that runs the agent for a single, hardcoded query and asserts that a valid, structured `Entity` is created in the test database.
+- [ ] T03.14 [US1] **Checkpoint**: Run the `test_golden_path` and ensure it passes, proving the core agent logic works end-to-end.
+- [ ] T03.15 [US1] **Git**: Commit and push all Golden Path changes with message "feat(US1): Implement Golden Path E2E test".
+
+---
+
+## Phase 4: API Generalization & US2 Implementation
+
+**Goal**: Connect the functional agent to the API and implement the entity browsing and filtering features.
+
+- [ ] T04.01 [US1] **Upgrade** the `POST /api/runs` endpoint in `backend/src/api/runs.py` to run the agent as a background task using FastAPI's `BackgroundTasks`.
+- [ ] T04.02 [US1] **Upgrade** the `agent.start_run` method to accept dynamic tags and cities from the API.
+- [ ] T04.03 [US1] Write a full integration test for the `POST /api/runs` endpoint in `backend/tests/integration/test_api_runs.py`.
+- [ ] T04.04 [US2] Implement comprehensive filtering logic in the `GET /api/entities` endpoint in `backend/src/api/entities.py`.
+- [ ] T04.05 [US2] Write integration tests for all filter parameters of the `GET /api/entities` endpoint in `backend/tests/integration/test_api_entities.py`.
+- [ ] T04.06 [US2] Implement the `GET /api/export` endpoint in `backend/src/api/export.py`.
+- [ ] T04.07 [US2] Write integration tests for the export endpoint in `backend/tests/integration/test_api_entities.py`.
+- [ ] T04.08 [P] [US2] Create the placeholder `BrowseView.js` and `EntityDetail.js` components in `frontend/src/pages/`.
+- [ ] T04.09 [US1, US2] **Checkpoint**: Start the servers, open the browser, and manually verify that you can start a run from the API and see the results appear when you query the entities endpoint.
+- [ ] T04.10 [US1, US2] **Git**: Commit and push all API generalization and US2 changes with message "feat(US1, US2): Generalize API and implement entity browsing".
 
 ---
 
 ## Phase 5: User Story 4 - Manually Add and Autocomplete Entities
 
-**Goal**: Implement the AI-assisted manual entry feature.
-**Independent Test**: A user can submit a new entity with minimal data, and the agent will complete and save it.
+**Goal**: Implement the AI-assisted manual data entry feature.
 
-- [ ] T036 [US4] Implement the agentic logic for single-entity enrichment in `backend/src/core/curation.py`.
-- [ ] T037 [US4] Implement the API endpoint for AI-assisted entity creation (`POST /api/entities/autocomplete`) in `backend/src/api/entities.py`.
-- [ ] T038 [US4] Implement the API endpoint for the review queue (`GET /api/review_queue`) in `backend/src/api/review.py`.
-- [ ] T039 [US4] Write integration tests for the new autocomplete and review queue endpoints in `backend/tests/integration/test_api_curation.py`.
-- [ ] T040 [P] [US4] Create the placeholder "Add Entity" form component in `frontend/src/components/AddEntityForm.js`.
-- [ ] T041 [P] [US4] Create the placeholder `ReviewQueue` view component in `frontend/src/pages/ReviewQueue.js`.
-- [ ] T042 **Checkpoint**: Manually test the autocomplete endpoint to confirm it enriches and saves a new entity.
+- [ ] T05.01 [US4] Implement the single-entity enrichment logic in `backend/src/core/curation.py`.
+- [ ] T05.02 [US4] Implement the `POST /api/entities/autocomplete` endpoint in `backend/src/api/entities.py`.
+- [ ] T05.03 [US4] Implement the `GET /api/review_queue` endpoint in `backend/src/api/review.py`.
+- [ ] T05.04 [US4] Write integration tests for the autocomplete and review queue endpoints in `backend/tests/integration/test_api_curation.py`.
+- [ ] T05.05 [P] [US4] Create placeholder components `AddEntityForm.js` and `ReviewQueue.js` in `frontend/src/`.
+- [ ] T05.06 [US4] **Checkpoint**: Manually test the autocomplete endpoint to confirm it enriches and saves a new entity.
+- [ ] T05.07 [US4] **Git**: Commit and push all US4 changes with message "feat(US4): Implement AI-assisted curation".
 
 ---
 
 ## Phase 6: User Story 3 - Curate and Manage Data
 
-**Goal**: Implement data editing, starring, and the undo feature.
-**Independent Test**: A user can edit an entity, star it, and undo the last run, with all changes correctly reflected in the database.
+**Goal**: Implement manual editing, starring, and the undo feature.
 
-- [ ] T043 [US3] Implement the API endpoint for updating an entity (`PUT /api/entities/{entity_id}`) in `backend/src/api/entities.py`.
-- [ ] T044 [US3] Implement the API endpoints for starring/unstarring an entity in `backend/src/api/entities.py`.
-- [ ] T045 [US3] Implement the "Undo Last Run" logic in `backend/src/core/agent.py`.
-- [ ] T046 [US3] Implement the API endpoint for undoing the last run (`POST /api/runs/undo_last`) in `backend/src/api/runs.py`.
-- [ ] T047 [US3] Write integration tests for the update, star, and undo endpoints in `backend/tests/integration/test_api_edits.py`.
-- [ ] T048 **Checkpoint**: Manually test all curation features via the API.
-
----
-
-## Phase 7: Polish & Hardening
-
-**Purpose**: Improve robustness, user experience, and documentation.
-
-- [ ] T049 [P] Implement user-friendly error handling and messaging in the backend API.
-- [ ] T050 [P] Create placeholder components for empty states (e.g., no entities found) in the frontend.
-- [ ] T051 Write the E2E smoke test script in `backend/tests/e2e/test_smoke.py`.
-- [ ] T052 Final review and update of `README.md` and `quickstart.md`.
-- [ ] T053 Run all tests and confirm they pass.
+- [ ] T06.01 [US3] Implement the `PUT /api/entities/{entity_id}` endpoint in `backend/src/api/entities.py`.
+- [ ] T06.02 [US3] Implement the starring/unstarring endpoints in `backend/src/api/entities.py`.
+- [ ] T06.03 [US3] Implement the "Undo Last Run" logic in `backend/src/core/agent.py`.
+- [ ] T06.04 [US3] Implement the `POST /api/runs/undo_last` endpoint in `backend/src/api/runs.py`.
+- [ ] T06.05 [US3] Write integration tests for all edit, star, and undo endpoints in `backend/tests/integration/test_api_edits.py`.
+- [ ] T06.06 [US3] **Checkpoint**: Manually test all curation features via the API.
+- [ ] T06.07 [US3] **Git**: Commit and push all US3 changes with message "feat(US3): Implement data curation and undo".
 
 ---
 
-## Summary
+## Phase 7: Polish & Finalization
 
-| Category | Count |
-|---|---|
-| Total Tasks | 53 |
-| Parallelizable Tasks | 11 |
-| **Tasks per Phase** | |
-| Phase 1: Setup | 6 |
-| Phase 2: Foundational | 10 |
-| Phase 3: US1 | 13 |
-| Phase 4: US2 | 6 |
-| Phase 5: US4 | 7 |
-| Phase 6: US3 | 6 |
-| Phase 7: Polish | 5 |
+**Purpose**: Finalize the application for MVP release.
 
-**Suggested MVP Path**: Completing Phases 1, 2, and 3 will deliver the core value proposition: a user can configure and run the agent to collect data. This is the smallest end-to-end slice.
+- [ ] T07.01 [P] Implement user-friendly error handling across the API.
+- [ ] T07.02 [P] Create basic empty states in the frontend placeholder components.
+- [ ] T07.03 Write the final E2E smoke test in `backend/tests/e2e/test_smoke.py`.
+- [ ] T07.04 Final review and update of all documentation (`README.md`, `quickstart.md`).
+- [ ] T07.05 **Checkpoint**: Run all tests (`unit`, `integration`, `e2e`) and confirm 100% pass rate.
+- [ ] T07.06 **Git**: Commit and push all final changes with message "chore: Finalize MVP and run all tests".

@@ -13,3 +13,4 @@ dependencies:
     - google-generativeai
     - pytest
     - httpx
+    - google-search-results

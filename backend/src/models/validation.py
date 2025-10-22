@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, ConfigDict
 from typing import List, Optional
 
 class TagBase(BaseModel):
@@ -10,9 +10,7 @@ class TagCreate(TagBase):
 
 class Tag(TagBase):
     id: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class EntityBase(BaseModel):
     name: str
@@ -28,10 +26,9 @@ class EntityCreate(EntityBase):
 
 class Entity(EntityBase):
     id: int
+    run_id: Optional[int] = None
     tags: List[Tag] = []
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RunBase(BaseModel):
     parameters: str
@@ -44,6 +41,5 @@ class Run(RunBase):
     started_at: str
     finished_at: Optional[str] = None
     status: str
-
-    class Config:
-        orm_mode = True
+    results_summary: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)

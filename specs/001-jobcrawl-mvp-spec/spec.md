@@ -104,6 +104,11 @@ As a researcher, I want to manually add a new entity by providing minimal inform
 -   **FR-024**: When a user provides minimal information for a new entity (e.g., name or website), the system MUST trigger an agentic process to research and populate the remaining fields.
 -   **FR-025**: The agentic process for manual additions MUST reuse the same discovery, deduplication, and enrichment logic as the main discovery runs.
 -   **FR-026**: After autocompleting a manually added entity, the system MUST check for duplicates against the existing database and prompt the user for review if a potential match is found.
+-   **FR-027**: The `updated_at` timestamp of an `Entity` MUST be updated when a related object (e.g., a `Tag` or `Person`) is added or removed.
+-   **FR-028**: The "Undo Last Run" feature MUST be implemented by deleting all `entities`, `people`, and `sources` that are associated with the `run_id` of the last completed run.
+-   **FR-029**: If a user attempts to create a `Tag` that already exists (case-insensitive), the API MUST return a `400 Bad Request` error.
+-   **FR-030**: If a user attempts to update an `Entity` that does not exist, the API MUST return a `404 Not Found` error.
+-   **FR-031**: If a user attempts to undo a run when no runs have been completed, the API MUST return a `404 Not Found` error.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -119,6 +124,9 @@ As a researcher, I want to manually add a new entity by providing minimal inform
 -   **C-001**: The system MUST use a local, file-based SQL database (e.g., SQLite) for all data storage.
 -   **C-002**: The application MUST be compatible with macOS, Linux, and Windows.
 -   **C-003**: The system MUST operate locally with no cloud dependencies, apart from the required calls to the Gemini API for data processing.
+-   **C-004**: For the MVP, direct user edits are limited to the `entities` table.
+-   **C-005**: A person-entity link is considered 'moderate or low' confidence if the confidence score provided by the agent is less than 0.75.
+-   **C-006**: Tag names must be between 1 and 50 characters.
 
 ## Clarifications
 
