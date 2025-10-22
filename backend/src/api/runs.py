@@ -29,3 +29,8 @@ def create_run(run: RunCreate, db: Session = Depends(get_db)):
 def read_runs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     runs = db.query(RunModel).offset(skip).limit(limit).all()
     return runs
+
+@router.post("/runs/undo_last", response_model=dict)
+def undo_last_run(db: Session = Depends(get_db)):
+    # Full undo logic will be implemented in a later phase.
+    return {"message": "Undo last run endpoint skeleton."}

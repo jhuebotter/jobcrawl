@@ -15,7 +15,7 @@
 - [x] T01.05 Refactor all API routers in `backend/src/api/` to use the canonical `get_db` function.
 - [x] T01.06 Refactor `backend/tests/conftest.py` to use the `StaticPool` and app factory pattern for a reliable, in-memory test database.
 - [x] T01.07 **Checkpoint**: Run all existing integration tests and confirm they pass with the new test setup.
-- [ ] T01.08 **Git**: Commit and push all foundational setup changes with message "refactor: Solidify foundational backend and test setup".
+- [x] T01.08 **Git**: Commit and push all foundational setup changes with message "refactor: Solidify foundational backend and test setup".
 
 ---
 
@@ -23,13 +23,13 @@
 
 **Purpose**: Implement the full skeleton of the backend API, ensuring all endpoints are defined and testable before adding complex business logic.
 
-- [ ] T02.01 [P] Implement the basic CRUD endpoints for tags (`create_tag`, `read_tags`) in `backend/src/api/tags.py`.
-- [ ] T02.02 [P] Implement the skeleton for all entity endpoints (`read_entities`, `update_entity`, `autocomplete_entity`) in `backend/src/api/entities.py`.
-- [ ] T02.03 [P] Implement the skeleton for all run endpoints (`create_run`, `read_runs`, `undo_last_run`) in `backend/src/api/runs.py`.
-- [ ] T02.04 [P] Implement the skeleton for the review queue endpoints in `backend/src/api/review.py`.
-- [ ] T02.05 [P] Implement the skeleton for the export endpoint in `backend/src/api/export.py`.
-- [ ] T02.06 Write basic integration tests for each skeleton endpoint in the `backend/tests/integration/` directory to ensure they are reachable and return correct status codes.
-- [ ] T02.07 **Checkpoint**: Run all integration tests against the skeleton API and confirm they pass.
+- [x] T02.01 [P] Implement the basic CRUD endpoints for tags (`create_tag`, `read_tags`) in `backend/src/api/tags.py`.
+- [x] T02.02 [P] Implement the skeleton for all entity endpoints (`read_entities`, `update_entity`, `autocomplete_entity`) in `backend/src/api/entities.py`.
+- [x] T02.03 [P] Implement the skeleton for all run endpoints (`create_run`, `read_runs`, `undo_last_run`) in `backend/src/api/runs.py`.
+- [x] T02.04 [P] Implement the skeleton for the review queue endpoints in `backend/src/api/review.py`.
+- [x] T02.05 [P] Implement the skeleton for the export endpoint in `backend/src/api/export.py`.
+- [x] T02.06 Write basic integration tests for each skeleton endpoint in the `backend/tests/integration/` directory to ensure they are reachable and return correct status codes.
+- [x] T02.07 **Checkpoint**: Run all integration tests against the skeleton API and confirm they pass.
 - [ ] T02.08 **Git**: Commit and push the complete API skeleton with message "feat: Implement foundational API skeleton".
 
 ---

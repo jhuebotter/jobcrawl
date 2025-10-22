@@ -51,3 +51,13 @@ def read_entities(
     
     entities = query.offset(skip).limit(limit).all()
     return entities
+
+@router.put("/entities/{entity_id}", response_model=Entity)
+def update_entity(entity_id: int, entity: EntityCreate, db: Session = Depends(get_db)):
+    db_entity = db.query(EntityModel).filter(EntityModel.id == entity_id).first()
+    if db_entity is None:
+        raise HTTPException(status_code=404, detail="Entity not found")
+    
+    # For now, we'll just return the existing entity without updating.
+    # The full update logic will be implemented in a later phase.
+    return db_entity
