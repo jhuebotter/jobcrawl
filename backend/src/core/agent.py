@@ -6,6 +6,7 @@ from backend.src.models.schema import Run, Entity, Tag, EntityTag, Source, Perso
 from backend.src.models.validation import EntityCreate
 from backend.src.core.provider import llm_provider
 from backend.src.core.scraping import scraper
+from backend.src.core.prompts import load_prompt
 from pydantic import ValidationError
 
 logger = get_logger(__name__)
@@ -32,25 +33,19 @@ class Agent:
         logger.info(f"Run {run.id} completed.")
 
     def _generate_search_query(self, city: str, tag_name: str, institution_types: list[str]) -> str:
-        prompt = f"""
-        Generate a single, concise search engine query to find {', '.join(institution_types)}
-        related to '{tag_name}' in {city}. The query should be suitable for a Google search.
-        Return only the query string itself.
-        """
+        prompt_template = load_prompt("discovery")
+        prompt = prompt_template.format(
+            institution_types=', '.join(institution_types),
+            tag_name=tag_name,
+            city=city
+        )
         query = llm_provider.generate(prompt).strip()
         logger.info(f"  - Generated search query: {query}")
         return query
 
     def _extract_data(self, content: str, url: str) -> dict:
-        prompt = f"""
-        Given the following text from {url}, extract a single professional entity (like a company, research lab, or university department).
-        Return a JSON object with the following fields: name, kind, summary, website, city, country.
-
-        Text:
-        ---
-        {content}
-        ---
-        """
+        prompt_template = load_prompt("extraction")
+        prompt = prompt_template.format(url=url, content=content)
         response_text = llm_provider.generate(prompt)
         try:
             return json.loads(response_text)
@@ -75,10 +70,16 @@ class Agent:
 
     def _persist_entity(self, db: Session, entity_data: EntityCreate, url: str, run_id: int):
         now = datetime.datetime.now(datetime.UTC).isoformat()
+        
+        entity_dict = entity_data.model_dump()
+        if 'website' in entity_dict and entity_dict['website'] is not None:
+            entity_dict['website'] = str(entity_dict['website'])
+
         new_entity = Entity(
-            **entity_data.model_dump(),
+            **entity_dict,
             created_at=now,
-            updated_at=now
+            updated_at=now,
+            run_id=run_id
         )
         db.add(new_entity)
         db.commit()
@@ -86,7 +87,8 @@ class Agent:
         new_source = Source(
             entity_id=new_entity.id,
             url=url,
-            retrieved_at=now
+            retrieved_at=now,
+            run_id=run_id
         )
         db.add(new_source)
         db.commit()
@@ -97,6 +99,10 @@ class Agent:
         
         urls = scraper.retrieve_content(search_query)
         for url in urls:
+            if not scraper.robots_checker.can_fetch(url):
+                logger.info(f"Skipping {url} due to robots.txt")
+                continue
+
             content = scraper.get_page_content(url)
             if content:
                 extracted_data = self._extract_data(content, url)

@@ -30,7 +30,7 @@
 - [x] T02.05 [P] Implement the skeleton for the export endpoint in `backend/src/api/export.py`.
 - [x] T02.06 Write basic integration tests for each skeleton endpoint in the `backend/tests/integration/` directory to ensure they are reachable and return correct status codes.
 - [x] T02.07 **Checkpoint**: Run all integration tests against the skeleton API and confirm they pass.
-- [ ] T02.08 **Git**: Commit and push the complete API skeleton with message "feat: Implement foundational API skeleton".
+- [x] T02.08 **Git**: Commit and push the complete API skeleton with message "feat: Implement foundational API skeleton".
 
 ---
 
@@ -40,26 +40,26 @@
 
 ### Sub-Phase 3.1: Prompt Engineering
 
-- [ ] T03.01 [US1] Create a utility function in `backend/src/core/prompts.py` to load prompt templates from the `backend/src/prompts/` directory.
-- [ ] T03.02 [US1] Write a unit test for the prompt loading utility in `backend/tests/unit/test_prompts.py`.
-- [ ] T03.03 [P] [US1] Write the first version of the search query generation prompt in `backend/src/prompts/discovery.txt`.
-- [ ] T03.04 [P] [US1] Write the first version of the data extraction prompt in `backend/src/prompts/extraction.txt`, ensuring it explicitly requests valid JSON with a confidence score.
+- [x] T03.01 [US1] Create a utility function in `backend/src/core/prompts.py` to load prompt templates from the `backend/src/prompts/` directory.
+- [x] T03.02 [US1] Write a unit test for the prompt loading utility in `backend/tests/unit/test_prompts.py`.
+- [x] T03.03 [P] [US1] Write the first version of the search query generation prompt in `backend/src/prompts/discovery.txt`.
+- [x] T03.04 [P] [US1] Write the first version of the data extraction prompt in `backend/src/prompts/extraction.txt`, ensuring it explicitly requests valid JSON with a confidence score.
 
 ### Sub-Phase 3.2: Real Agent Logic
 
-- [ ] T03.05 [US1] **Upgrade** `backend/src/core/scraping.py`: Implement a real web search function using the `google-search-results` library.
-- [ ] T03.06 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_generate_search_query` method to use the `discovery.txt` prompt.
-- [ ] T03.07 [US1] **Upgrade** `backend/src/core/agent.py`: In the `_process_pair` method, explicitly call the `robots_checker.can_fetch()` method from `scraping.py` before attempting to scrape any URL.
-- [ ] T03.08 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_extract_data` method to use the `extraction.txt` prompt and include robust JSON parsing.
-- [ ] T03.09 [US1] Write a unit test for the `_normalize_and_validate` method in `backend/tests/unit/test_agent.py`.
-- [ ] T03.10 [US1] Implement the LLM-driven deduplication logic in the `_find_duplicate` method in `backend/src/core/agent.py`.
-- [ ] T03.11 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the full `_process_pair` orchestration logic, calling all helper methods in sequence.
+- [x] T03.05 [US1] **Upgrade** `backend/src/core/scraping.py`: Implement a real web search function using the `google-search-results` library.
+- [x] T03.06 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_generate_search_query` method to use the `discovery.txt` prompt.
+- [x] T03.07 [US1] **Upgrade** `backend/src/core/agent.py`: In the `_process_pair` method, explicitly call the `robots_checker.can_fetch()` method from `scraping.py` before attempting to scrape any URL.
+- [x] T03.08 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the `_extract_data` method to use the `extraction.txt` prompt and include robust JSON parsing.
+- [x] T03.09 [US1] Write a unit test for the `_normalize_and_validate` method in `backend/tests/unit/test_agent.py`.
+- [x] T03.10 [US1] Implement the LLM-driven deduplication logic in `backend/src/core/agent.py`.
+- [x] T03.11 [US1] **Upgrade** `backend/src/core/agent.py`: Implement the full `_process_pair` orchestration logic, calling all helper methods in sequence.
 
 ### Sub-Phase 3.3: "Golden Path" E2E Integration Test
 
-- [ ] T03.12 [US1] Create the new test file `backend/tests/integration/test_agent_e2e.py`.
-- [ ] T03.13 [US1] In `test_agent_e2e.py`, write a `test_golden_path` function that runs the agent for a single, hardcoded query and asserts that a valid, structured `Entity` is created in the test database.
-- [ ] T03.14 [US1] **Checkpoint**: Run the `test_golden_path` and ensure it passes, proving the core agent logic works end-to-end.
+- [x] T03.12 [US1] Create the new test file `backend/tests/integration/test_agent_e2e.py`.
+- [x] T03.13 [US1] In `test_agent_e2e.py`, write a `test_golden_path` function that runs the agent for a single, hardcoded query and asserts that a valid, structured `Entity` is created in the test database.
+- [x] T03.14 [US1] **Checkpoint**: Run the `test_golden_path` and ensure it passes, proving the core agent logic works end-to-end.
 - [ ] T03.15 [US1] **Git**: Commit and push all Golden Path changes with message "feat(US1): Implement Golden Path E2E test".
 
 ---

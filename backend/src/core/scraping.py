@@ -2,6 +2,8 @@ import urllib.robotparser
 from urllib.parse import urlparse
 import requests
 from backend.src.core.logging import get_logger
+from serpapi import GoogleSearch
+import os
 
 logger = get_logger(__name__)
 
@@ -36,19 +38,33 @@ class RobotsChecker:
 class Scraper:
     def __init__(self):
         self.robots_checker = RobotsChecker()
+        self.serpapi_key = os.getenv("SERPAPI_API_KEY")
+        if not self.serpapi_key:
+            logger.warning("SERPAPI_API_KEY not found in environment variables. Web search will be simulated.")
 
     def retrieve_content(self, query: str) -> list[str]:
         """
-        Given a search query, retrieves a list of URLs.
-        This is a placeholder and does not perform a real search yet.
+        Given a search query, retrieves a list of URLs using SerpApi.
         """
-        logger.info(f"Simulating search for: {query}")
-        # Placeholder URLs
-        return [
-            "http://example.com/page1",
-            "http://example.com/page2",
-            "http://example.com/disallowed",
-        ]
+        if not self.serpapi_key:
+            logger.info(f"Simulating search for: {query}")
+            return [
+                "http://example.com/page1",
+                "http://example.com/page2",
+                "http://example.com/disallowed",
+            ]
+
+        params = {
+            "engine": "google",
+            "q": query,
+            "api_key": self.serpapi_key,
+        }
+
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        organic_results = results.get("organic_results", [])
+        
+        return [r.get("link") for r in organic_results if r.get("link")]
 
     def get_page_content(self, url: str) -> str:
         """
@@ -62,7 +78,7 @@ class Scraper:
             response = requests.get(url, headers={'User-Agent': self.robots_checker.user_agent})
             response.raise_for_status()
             # In a real implementation, we would parse the HTML here.
-            return response.text[:500] # Return a snippet for now
+            return response.text[:2000] # Return a snippet for now
         except requests.RequestException as e:
             logger.error(f"Failed to fetch {url}: {e}")
             return ""

@@ -37,6 +37,6 @@ def _reset_db():
     Base.metadata.drop_all(bind=engine)
 
 @pytest.fixture(scope="function")
-def client():
+def client(app):
     with TestClient(app) as c:
         yield c

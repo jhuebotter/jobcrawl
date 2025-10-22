@@ -1,0 +1,7 @@
+Given the following text from {url}, extract a single professional entity (like a company, research lab, or university department).
+Return a JSON object with the following fields: name, kind, summary, website, city, country, and a confidence score from 0.0 to 1.0.
+
+Text:
+---
+{content}
+---
