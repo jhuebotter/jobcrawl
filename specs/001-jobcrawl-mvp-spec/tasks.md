@@ -60,7 +60,7 @@
 - [x] T03.12 [US1] Create the new test file `backend/tests/integration/test_agent_e2e.py`.
 - [x] T03.13 [US1] In `test_agent_e2e.py`, write a `test_golden_path` function that runs the agent for a single, hardcoded query and asserts that a valid, structured `Entity` is created in the test database.
 - [x] T03.14 [US1] **Checkpoint**: Run the `test_golden_path` and ensure it passes, proving the core agent logic works end-to-end.
-- [ ] T03.15 [US1] **Git**: Commit and push all Golden Path changes with message "feat(US1): Implement Golden Path E2E test".
+- [x] T03.15 [US1] **Git**: Commit and push all Golden Path changes with message "feat(US1): Implement Golden Path E2E test".
 
 ---
 
@@ -68,15 +68,15 @@
 
 **Goal**: Connect the functional agent to the API and implement the entity browsing and filtering features.
 
-- [ ] T04.01 [US1] **Upgrade** the `POST /api/runs` endpoint in `backend/src/api/runs.py` to run the agent as a background task using FastAPI's `BackgroundTasks`.
-- [ ] T04.02 [US1] **Upgrade** the `agent.start_run` method to accept dynamic tags and cities from the API.
-- [ ] T04.03 [US1] Write a full integration test for the `POST /api/runs` endpoint in `backend/tests/integration/test_api_runs.py`.
-- [ ] T04.04 [US2] Implement comprehensive filtering logic in the `GET /api/entities` endpoint in `backend/src/api/entities.py`.
-- [ ] T04.05 [US2] Write integration tests for all filter parameters of the `GET /api/entities` endpoint in `backend/tests/integration/test_api_entities.py`.
-- [ ] T04.06 [US2] Implement the `GET /api/export` endpoint in `backend/src/api/export.py`.
-- [ ] T04.07 [US2] Write integration tests for the export endpoint in `backend/tests/integration/test_api_entities.py`.
-- [ ] T04.08 [P] [US2] Create the placeholder `BrowseView.js` and `EntityDetail.js` components in `frontend/src/pages/`.
-- [ ] T04.09 [US1, US2] **Checkpoint**: Start the servers, open the browser, and manually verify that you can start a run from the API and see the results appear when you query the entities endpoint.
+- [x] T04.01 [US1] **Upgrade** the `POST /api/runs` endpoint in `backend/src/api/runs.py` to run the agent as a background task using FastAPI's `BackgroundTasks`.
+- [x] T04.02 [US1] **Upgrade** the `agent.start_run` method to accept dynamic tags and cities from the API.
+- [x] T04.03 [US1] Write a full integration test for the `POST /api/runs` endpoint in `backend/tests/integration/test_api_runs.py`.
+- [x] T04.04 [US2] Implement comprehensive filtering logic in the `GET /api/entities` endpoint in `backend/src/api/entities.py`.
+- [x] T04.05 [US2] Write integration tests for all filter parameters of the `GET /api/entities` endpoint in `backend/tests/integration/test_api_entities.py`.
+- [x] T04.06 [US2] Implement the `GET /api/export` endpoint in `backend/src/api/export.py`.
+- [x] T04.07 [US2] Write integration tests for the export endpoint in `backend/tests/integration/test_api_entities.py`.
+- [x] T04.08 [P] [US2] Create the placeholder `BrowseView.js` and `EntityDetail.js` components in `frontend/src/pages/`.
+- [ ] T04.09 [US1, US2] **Checkpoint**: Start the servers, open the browser, and manually verify that you can start a run from the API and see the results appear when you query the entities endpoint. (Blocked: Cannot start server)
 - [ ] T04.10 [US1, US2] **Git**: Commit and push all API generalization and US2 changes with message "feat(US1, US2): Generalize API and implement entity browsing".
 
 ---

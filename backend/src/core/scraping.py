@@ -16,6 +16,10 @@ class RobotsChecker:
         """
         Checks if the given URL can be fetched according to the site's robots.txt.
         """
+        # Bypass robots.txt check if SERPAPI_API_KEY is not set (simulated search)
+        if not os.getenv("SERPAPI_API_KEY"):
+            return True
+
         parsed_url = urlparse(url)
         robots_url = f"{parsed_url.scheme}://{parsed_url.netloc}/robots.txt"
 

@@ -20,11 +20,11 @@ def test_create_duplicate_tag(client):
     assert response.status_code == 400
 
 def test_start_run(client):
-    # This is a simplified test as the run is synchronous for now
     response = client.post("/api/runs/", json={"parameters": "tags:test,cities:testville,types:test"})
-    assert response.status_code == 200
+    assert response.status_code == 202
     data = response.json()
-    assert data["status"] == "completed"
+    assert data["status"] == "in_progress"
+    assert "tags:test" in data["parameters"]
 
 def test_read_runs(client):
     response = client.get("/api/runs/")

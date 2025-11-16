@@ -1,6 +1,8 @@
+import os
 from fastapi import FastAPI
-from backend.src.api import tags, runs, entities, export, review
+from backend.src.api import tags, runs, entities, export, review, entity_tags
 from backend.src.core.db import create_db_and_tables
+from backend.src.core.logging import setup_logging
 
 def create_app():
     app = FastAPI()
@@ -10,10 +12,13 @@ def create_app():
     app.include_router(entities.router, prefix="/api")
     app.include_router(export.router, prefix="/api")
     app.include_router(review.router, prefix="/api")
+    app.include_router(entity_tags.router, prefix="/api")
 
     @app.on_event("startup")
     def on_startup():
-        create_db_and_tables()
+        setup_logging()
+        if not os.getenv("TESTING"):
+            create_db_and_tables()
 
     @app.get("/")
     def read_root():

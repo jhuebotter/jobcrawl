@@ -19,10 +19,18 @@ def export_entities(
     if format == "csv":
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow([c.name for c in EntityModel.__table__.columns])
+        
+        # Write header
+        header = [c.name for c in EntityModel.__table__.columns]
+        writer.writerow(header)
+        
+        # Write rows
         for entity in entities:
             writer.writerow([getattr(entity, c.name) for c in EntityModel.__table__.columns])
-        return StreamingResponse(iter([output.getvalue()]), media_type="text/csv")
+        
+        output.seek(0)
+        return StreamingResponse(output, media_type="text/csv")
 
     # Default to JSON
-    return [entity.__dict__ for entity in entities]
+    # A bit of a hack to make it JSON serializable
+    return json.loads(json.dumps([dict(e.__dict__) for e in entities], default=str))
