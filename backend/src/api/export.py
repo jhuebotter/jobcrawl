@@ -9,25 +9,22 @@ import json
 
 router = APIRouter()
 
+
 @router.get("/export/")
-def export_entities(
-    format: str = "json",
-    db: Session = Depends(get_db)
-):
+def export_entities(format: str = "json", db: Session = Depends(get_db)):
     entities = db.query(EntityModel).all()
-    
+
     if format == "csv":
         output = io.StringIO()
         writer = csv.writer(output)
-        
-        # Write header
-        header = [c.name for c in EntityModel.__table__.columns]
-        writer.writerow(header)
-        
+
+        # Write header - only include basic entity info
+        writer.writerow(["name", "city", "country"])
+
         # Write rows
         for entity in entities:
-            writer.writerow([getattr(entity, c.name) for c in EntityModel.__table__.columns])
-        
+            writer.writerow([entity.name, entity.city, entity.country])
+
         output.seek(0)
         return StreamingResponse(output, media_type="text/csv")
 

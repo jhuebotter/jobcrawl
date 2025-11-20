@@ -23,6 +23,13 @@ TestingSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, expire_on_commit=False
 )
 
+# Override the global SessionLocal and engine to use the test ones
+from backend.src.core import db as db_module
+
+db_module.SessionLocal = TestingSessionLocal
+db_module.engine = engine
+
+
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -30,8 +37,10 @@ def override_get_db():
     finally:
         db.close()
 
+
 # Apply dependency override once
 app.dependency_overrides[get_db] = override_get_db
+
 
 @pytest.fixture(scope="session", autouse=True)
 def _testing_env():
@@ -40,6 +49,7 @@ def _testing_env():
     yield
     os.environ.pop("TESTING", None)
 
+
 @pytest.fixture(scope="function", autouse=True)
 def _reset_db():
     # clean slate per test
@@ -47,6 +57,16 @@ def _reset_db():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(scope="function")
+def db():
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 @pytest.fixture(scope="function")
 def client():

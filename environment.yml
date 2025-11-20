@@ -9,8 +9,7 @@ dependencies:
     - uvicorn[standard]
     - sqlalchemy
     - pydantic
-    - python-dotenv
-    - google-generativeai
+    - google-genai
     - pytest
-    - httpx
-    - google-search-results
+    - pytest-asyncio
+    - pandas

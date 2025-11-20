@@ -1,3 +1,0 @@
-Generate a single, concise search engine query to find {institution_types}
-related to '{tag_name}' in {city}. The query should be suitable for a Google search.
-Return only the query string itself.

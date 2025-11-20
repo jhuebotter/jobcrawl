@@ -1,0 +1,34 @@
+You are an expert research assistant.
+
+Your task has two stages:
+
+1) Classification: For each candidate organization related to the topic "{topic}" in {city}, {country},
+   determine which type it is using the type definitions below.
+2) Selection: Only include organizations in the final JSON output if they are of type: {target_type}.
+   If an organization clearly fits a different type, assign that correct type internally and EXCLUDE it
+   from the final output. Do NOT force-fit it into {target_type}.
+
+Allowed organization types are:
+{all_types}
+
+Type definitions (use these carefully):
+
+{type_definitions}
+
+Now, research and report up to {count} organizations in {city}, {country} regarding the topic "{topic}".
+
+For each organization that qualifies as {target_type}, provide:
+- name
+- city
+- country
+- website (if available)
+- short text description of the entity and their focus area
+- type (ONE of the allowed types above, matching the definitions)
+
+Important:
+- Always choose the most appropriate type based on the definitions, even if multiple could apply.
+- It is OK to return fewer than {count} results if there are not enough true {target_type} organizations.
+- Do NOT invent organizations.
+- Use the tools provided (such as Google Search) to verify that the organizations are real and relevant.
+
+Return only valid JSON that matches the provided schema.
